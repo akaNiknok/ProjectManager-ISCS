@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block navbar %}
+ 
+      <li class="navbar-item"><a class="me-2" style="color: ADB5BD; text-decoration: none;" href="{% url 'dashboard' %}">Dashboard</a></li>
+      <li class="navbar-item"><a class="me-2" style="color: ADB5BD; text-decoration: none;" href="{% url 'view_members' %}">Members</a></li>
+      <li class="navbar-item"><a class="me-2" style="color: F8F9FA; text-decoration: none;" href="{% url 'view_project' %}">Overview</a></li>
+      <li><a class="mr-2" style="color: ADB5BD; text-decoration: none;" href="{% url "logout" %}">Logout</a></li>
+
+{% endblock %}
+
+{% block content %}
+<div style="color: WHITE;">
+  <div class="row mt-3" style="margin-left: 10px;">
+    <div class="col-8">
+      <h1>Project Name: {{ project.project_name }} </h1>
+    </div>
+    <div class="col mb-1">
+
+      {% if user.staff_type == "M" %}
+        <!-- Do not show edit details if project is "Archived" -->
+        {% if project.project_status != 2 %}
+        <a href="{% url 'update_project' %}">
+            <button class="btn btn-outline-success" type="button" style="width: 150px;">Edit Details</button>
+        </a>
+        {% endif %}
+        
+        <!-- Show archive project button only if project status is "Finished" -->
+        {% if project.project_status == 1 %}
+        <a href="{% url 'archive_project' %}">
+            <button class="btn btn-outline-warning" type="button" style="width: 150px;">Archive Project</button>
+        </a>      
+        {% endif %}
+
+        <!-- Show unarchive and delete button only if project status is "Archived" -->
+        {% if project.project_status == 2 %}
+        <a href="{% url 'archive_project' %}">
+            <button class="btn btn-outline-warning" type="button" style="width: 150px;">Unarchive Project</button>
+        </a>   
+        <a href="{% url 'delete_project' %}" >
+            <button class="btn btn-outline-danger" type="button" style="width:150px;">Delete Project</button>
+        </a>
+        {% endif %}
+      {% endif %}
+    </div> 
+  </div> 
+
+  <div class="mb-3" style="height: 1px; background-color: #EAEFF5"></div>
+  <!-- line break -->
+  <div class="row" style="margin-left: 5px;">
+    <div class="col">
+      <h2 style="font-size: 26px;"> Description </h2>
+    </div>
+  </div>
+
+  <div class="row" style="margin-left: 5px; width: 95%">
+    <p style="text-justify: auto;"> {{ project.project_desc }} </p>
+  </div>
+
+  <div class="mb-3" style="height: 1px; background-color: #EAEFF5"></div>
+  <!-- line break -->
+
+  <div class="row">
+    <div class="col">
+      <div class="row" style="margin-left: 5px;">
+        <div class="col-5">
+          <h2>Project Start:</h2>
+        </div>
+        <div class="col">
+          <h3> {{ project.project_start }} </h3>
+        </div>
+      </div>
+
+      <div class="row" style="margin-left: 5px;">
+        <div class="col-5">
+          <h2>Project End:</h2>
+        </div>
+        
+        <div class="col">
+          <h3> {{ project.project_end }} </h3> 
+        </div>
+      </div>
+    </div>
+
+    <div class="col-5">
+      <h2 class="ms-3"> Days until End of Project </h2>
+      <div class="progress mb-3" role="progressbar" style="height: 20px; width: 70%;">
+        <div class="progress-bar bg-success" style="width: {{start_to_now_percentage}}%; color: BLACK"> {{ start_to_now }} days done </div>
+        <div class="progress-bar bg-light" style="width: {{end_to_now_percentage}}%; color: BLACK"> {{ end_to_now }} days left </div>
+      </div>
+    </div>
+  </div>
+  <div class="mb-3" style="height: 1px; background-color: #EAEFF5"></div>
+  <!-- line break -->
+  
+  <div class="row">
+    <div class="col-3">
+      <h2 style="margin-left: 18px;">Project Status:</h2>
+    </div>
+    <div class="col">
+      <h2> {{ project.get_project_status_display }} </h2> 
+    </div>
+      <!-- For IntegerChoices / TextChoices, use {{ OBJNAME.get_FIELDNAME_display }} -->
+  </div>
+
+  <!-- Scripting Stuff ig --> 
+  <div class="mb-3" style="height: 1px; background-color: #EAEFF5"></div>
+  <!-- line break -->
+  <div class="col">
+    <h2 class="ms-3"> Overall Task Progress </h2>
+  </div>
+
+  <div class="progress mb-3" role="progressbar"  style="height: 20px; width: 75%; margin-left: 12%">
+    <div class="progress-bar bg-danger" style="width: {{progress}}%"> In Progress</div>
+    <div class="progress-bar bg-warning" style="width: {{review}}%"> For Review</div>
+    <div class="progress-bar bg-success" style="width: {{completed}}%"> Completed </div>
+  </div>
+
+  <div class="mb-3" style="height: 1px; background-color: #EAEFF5"></div>
+  <!-- line break -->
+
+  {% if user.staff_type == "M" or user.staff_type == "X" %}
+  <h2 class="ms-3"> Financial Summary </h2>
+  
+  <!-- TABLE OF EXPENSES PLUS THE TOTAL EXPENSES -->
+  <div class="ms-3">
+    <div class="col">
+      {% load humanize %}
+      <h2> Total Expenses: {{ total_expenses|floatformat:2|intcomma }} PHP</h2>
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+
+{% endblock %}

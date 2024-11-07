@@ -1,0 +1,75 @@
+#tasksList {
+    float: left;
+    width: 50%;
+}
+
+#expensesList {
+    float: right;
+    width: 50%;
+}
+
+#tasksForm {
+    float: right;
+    width: 50%;
+    display: none;
+}
+
+#expensesForm {
+    float: left;
+    width: 50%;
+    display: none;
+}
+
+td>h5 {
+    font-weight: normal;
+}
+
+
+.removeBottomBorder {
+    border-bottom: 0;
+}
+
+table>tbody>tr>td>table>tbody>tr>td {
+    padding: 10 !important;
+}
+
+/* Temporary color for labels */
+label {
+    color: white;
+}
+
+.hide {
+  display: none;
+}
+
+.scrollable {
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: 75%;
+}
+
+.scrollable::-webkit-scrollbar {
+  width: 10px;
+}
+
+.scrollable::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+  border: 1px solid #666;
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+  border: 1px solid #666;
+}
+
+::-webkit-scrollbar:horizontal{
+  display: none;
+}
+

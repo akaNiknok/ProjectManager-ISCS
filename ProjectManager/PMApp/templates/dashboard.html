@@ -1,0 +1,343 @@
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block navbar %}
+      <li class="navbar-item"><a class="me-2" style="color: F8F9FA; text-decoration: none;" href="{% url 'dashboard' %}">Dashboard</a></li>
+      {% if project is not None %}
+      <li class="navbar-item"><a class="me-2" style="color: ADB5BD; text-decoration: none;" href="{% url 'view_members' %}">Members</a></li>
+      <li class="navbar-item"><a class="me-2" style="color: ADB5BD; text-decoration: none;" href="{% url 'view_project' %}">Overview</a></li>
+      {% endif %}
+      <li><a class="mr-2" style="color: ADB5BD; text-decoration: none;" href="{% url "logout" %}">Logout</a></li>
+{% endblock %}
+
+<script>
+</script>
+{% block content %}
+    
+    <h1 class="ms-3" style="color: WHITE;">{{ project.project_name }}</h1>
+    <!-- Resolve the issue of scrolling too far and casuing it to stay, add a function which tracks how far away from the start tihs is and moves with it -->
+    <div class="mb-3" style="height: 1px; background-color: #EAEFF5;"></div>
+    <div id="vertical_line" style="position: fixed; top: 112px; left: 48%; border-right: solid 1px white; height: 10000;"></div>
+
+    <script>
+      window.onscroll = function (){
+        let vert_line = document.getElementById("vertical_line");  
+
+        if(window.scrollY > 0){
+          let scrolled = 130 - window.scrollY;
+          vert_line.style.top = scrolled.toString() + 'px';
+        }
+        else{
+          vert_line.style.top = "118px"
+        }
+      }
+    </script>
+    <!-- line break -->
+
+    <!-- Tasks list -->
+    <div id="tasksList" class="scrollable" style="width: 47%; height:80%">
+      
+      <div class="row">
+        <div class="col-2">
+          <h2 class="ms-3"style="color: WHITE">
+            Tasks
+          </h2>
+        </div>
+        <div class="col mt-1">
+          {% if project is not None and project.project_status != 2 %}
+            {% if user.staff_type == "M" %}
+              <button id="tasksCreateBtn" class="rounded-5" style="width: 32px; height: 32px;" onclick="toggleForm('tasks')"> + </button>
+            {% endif %}
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="mb-3 ms-3" style="height: 1px; width: 91%; background-color: #EAEFF5"></div>
+        <!-- line break --> 
+      {% for task, members in tasks_and_members.items %}
+      <table id="taskTable{{forloop.counter}}" class="table ms-3 rounded-3 overflow-hidden" style="width: 91%;">  
+
+        <script 
+          defer 
+          data-task-status = "{{ task.get_task_status_display}}">
+          var table = document.getElementById("taskTable{{forloop.counter}}");
+          var data = document.currentScript.dataset;
+          var task_status = data.taskStatus;
+          switch(task_status){
+            case "In Progress":
+              table.classList.add("table-danger");
+              break;
+            case "For Review":
+              table.classList.add("table-warning");
+              break;
+            case "Completed":
+              table.classList.add("table-success");
+              break;
+          }
+        </script>
+
+          <tr>
+            <td>
+              <h5>{{ task.task_name }}</h5>
+              <br>
+
+              {% if user.staff_type != "X" and project.project_status != 2 %}
+                <!-- Edit Form -->
+                <form action="{% url "update_task" task_id=task.task_id%}" method="POST" id="task-form-{{ task.task_id }}" class="mb-0 mt-2">{% csrf_token %}
+                  <input type="submit" id="save-task-{{ task.task_id }}" value="Save" class="btn btn-outline-success btn-sm" style="display: none; width: 60px;">
+                </form>
+                <button type="button" class="btn btn-outline-dark btn-sm edit-btn" data-type="task" data-id="{{ task.task_id }}" data-staff="{{ user.staff_type }}" style="width: 60px;">Edit</button>
+
+                {% if user.staff_type != "Em" %}
+                  <!-- Delete Form -->
+                  <form action="{% url "delete_task" %}" method="POST">{% csrf_token %}
+                    <input type="hidden" name="task_id" value="{{ task.task_id }}">
+                    <input type="submit" id="delete-task-{{ task.task_id }}" value="Delete" class="btn btn-outline-danger btn-sm" style="display: none; width: 60px;">
+                  </form>
+                {% endif %}
+              {% endif %}
+            </td>                 
+            <td class="table table-light p-0" style="width:80%">
+              <table style="text-align: left;" class="table table-light mb-0">
+                <tr>
+                  <td>
+                    <i>Status:</i> <b id="status-{{ task.task_id }}">{{ task.get_task_status_display }}</b>
+                    <select id="status-form-{{ task.task_id }}" form="task-form-{{ task.task_id }}" name="status" class="form-control w-25" style="display: none;">
+                      <option value="0" {% if task.task_status == 0 %}selected{% endif %}>In Progress</option>
+                      <option value="1" {% if task.task_status == 1 %}selected{% endif %}>For Review</option>
+                      <option value="2" {% if task.task_status == 2 %}selected{% endif %}{% if task.task_status != 2 and user.staff_type == "Em" %}disabled{% endif %}>Completed</option>
+                    </select>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <i>Priority:</i> <b id="priority-{{ task.task_id }}">{{ task.get_task_priority_display }}</b>
+                    <select id="priority-form-{{ task.task_id }}" form="task-form-{{ task.task_id }}" name="priority" class="form-control w-25" style="display: none;">
+                      <option value="L" {% if task.task_priority == "L" %}selected{% endif %}>Low</option>
+                      <option value="M" {% if task.task_priority == "M" %}selected{% endif %}>Medium</option>
+                      <option value="H" {% if task.task_priority == "H" %}selected{% endif %}>High</option>
+                    </select>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <i>Notes:</i> <span id="notes-{{ task.task_id }}">{{ task.task_notes|linebreaks }}</span>
+                    <textarea id="notes-form-{{ task.task_id }}" form="task-form-{{ task.task_id }}" class="form-control" style="display: none; width: 95%; resize: none;" name="notes" cols="30" rows="10">{{ task.task_notes }}</textarea>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <i>Deadline:</i>
+                    <b id="deadline-{{ task.task_id }}">{{ task.task_deadline }}</b>
+                    <input id="deadline-form-{{ task.task_id }}" form="task-form-{{ task.task_id }}" class="form-control w-25" style="display: none;" type="date" name="deadline" value="{{ task.task_deadline|date:'Y-m-d' }}">
+                  </td>
+                </tr>
+                <tr class="removeBottomBorder">
+                  <td class="removeBottomBorder">
+                    <i>Assigned to:</i>
+                    <span id="members-{{ task.task_id}}" style="display: block;">
+                    {% if members %}
+                      <ul class="mb-0">
+                        {% for member in members %}
+                          <li>
+                            {% if member.user.user_id == user.user_id %}
+                              Me
+                            {% else %}
+                              {{ member.user.name }} ({{ member.user.get_staff_type_display }})
+                            {% endif %}
+                          </li>
+                        {% endfor %}
+                      </ul>
+                    {% else%}
+                      <b>None</b>
+                    {% endif %}
+                    </span>
+                    <span id="members-form-{{ task.task_id }}" style="display: none;">
+                    {% for member in proj_members %}
+                      <div class="form-check">
+                        <input type="checkbox" form="task-form-{{ task.task_id }}" value="{{ member.member_id }}" name="members" id="memberCheck{{ task.task_id }}{{ forloop.counter }}" class="form-check-input" {% if member in members %}checked{% endif %}>
+                        <label class="form-check-label" for="memberCheck{{ task.task_id }}{{ forloop.counter }}" style="color: black;">
+                            {% if member.user.user_id == user.user_id %}
+                              Me
+                            {% else %}
+                              {{ member.user.name }} ({{ member.user.get_staff_type_display }})
+                            {% endif %}
+                        </label>
+                      </div>
+                    {% endfor %}
+                    </span>
+                  </td>
+              </table>
+            </td>
+          </tr>
+      </table>
+      {% endfor %}
+    </div>
+    
+    <!-- New task form -->
+    <div id="tasksForm">
+      <h2 style="color: WHITE">Create Task</h2>
+
+      <!-- line break --> 
+      <div class="mb-3" style="height: 1px; width: 93%; background-color: #EAEFF5"></div>
+
+      <form action="{% url 'create_task' %}" method="POST">{% csrf_token %}
+        <div class="row">
+          <div class="col-6">
+            <div class="row">
+              <label style="color: WHITE; font-size: 26px;" for="task_name">Task Name:</label>
+            </div>
+            <div class="row">
+              <input class="form-control mt-2 ms-2 rounded-3 overflow-hidden" style="width: 90%" type="text" name="task_name" id="task_name" required><br><br>
+            </div>
+
+            <div class="row">
+              <label style="color: WHITE; font-size: 26px;"for="task_notes">Task Notes:</label>
+            </div>
+            <div class="row">
+              <textarea class="form-label mt-2 ms-2 rounded-4 overflow-hidden" style="width: 90%; resize: none;" name="task_notes" id="task_notes" cols="30" rows="10"></textarea><br><br>
+            </div>
+
+            <label style="color: WHITE; font-size: 26px;">Task Priority:</label>
+            
+            <input class="mt-3" type="radio" id="task_priority_l" name="task_priority" value="L" required>
+            <label style="color: WHITE;" for="task_priority_l">Low</label>
+            <input class="mt-3" type="radio" id="task_priority_m" name="task_priority" value="M" required>
+            <label style="color: WHITE;" for="task_priority_m">Medium</label>
+            <input class="mt-3" type="radio" id="task_priority_h" name="task_priority" value="H" required>
+            <label style="color: WHITE;" for="task_priority_h">High</label>
+            <br><br>
+
+
+            <label style="color:WHITE; font-size: 26px;" for="task_deadline">Deadline:</label>
+            <input class="rounded-3 overflow-hidden" style="width:93%;"type="date" name="task_deadline" id="task_deadline"><br><br>
+
+            <div class="col">
+              <input class="btn btn-outline-secondary me-3" style="color:WHITE;" type="submit">
+              <button class="btn btn-outline-light me-3" onclick="toggleForm('tasks')" type="button">Cancel</button>
+            </div>
+          </div>
+
+          <div class="col-6">
+            <label style="color: WHITE; font-size: 26px;">Assign to:</label>
+            {% for member in proj_members %}
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="{{ member.member_id }}" name="members" id="memberCheck{{ forloop.counter }}">
+              <label class="form-check-label" for="memberCheck{{ forloop.counter }}">
+                {% if member.user.user_id == user.user_id %}
+                  Me
+                {% else %}
+                  {{ member.user.name }} ({{ member.user.get_staff_type_display }})
+                {% endif %}
+              </label>
+            </div>
+            {% endfor %}
+
+          </div>
+        </div>
+      </form>
+
+
+    </div>
+
+    <!-- New expense form -->
+    <div id="expensesForm">
+      <div class="ms-3">
+        <h2 style="color: WHITE;">New Expense</h2>
+        <div class="mb-3" style="height: 1px; width: 93%; background-color: #EAEFF5"></div>
+        <!-- line break --> 
+        <form action="{% url 'create_expense' %}" method="POST">{% csrf_token %}
+          <div class="row">
+            <label style="color: WHITE; font-size: 26px;" for="expense_date">Expense date:</label>
+          </div>
+          <div class="row">
+            <input class="rounded-3 overflow-hidden mt-2 ms-2" style="width:90%;" type="date" name="expense_date" id="expense_date" required><br><br>
+          </div>
+          <div class="row">
+            <label style="color: WHITE; font-size: 26px;" for="expense_desc">Expense Description:</label>
+          </div>
+          <div class="row">
+            <textarea class="rounded-4 overflow-hidden mt-2 ms-2" style="width: 90%; resize: none;" name="expense_desc" id="expense_desc" cols="30" rows="10" required></textarea><br><br>
+          </div>
+          <div class="row">
+            <label style="color: WHITE; font-size: 26px;" for="expense_amt">Expense Amount:</label>
+          </div>
+          <div class="row">
+            <input class="rounded-3 overflow-hidden mt-2 ms-2" style="width: 90%;" type="number" step="0.01" name="expense_amt" id="expense_amt" required>
+          </div>
+          <br><br>
+
+          <input class="btn me-3 btn-outline-secondary" style="color: WHITE;" type="submit">
+          <button class="btn btn-outline-light me-3" onclick="toggleForm('expenses')" type="button">Cancel</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Expenses list -->      
+    <div id="expensesList" class="scrollable" style="height: 80%">
+      <div class="row">
+        <div class="col-2" style="margin-right: 6%">
+          <h2  style="color: WHITE;"> 
+            Expenses 
+          </h2>
+        </div>
+        <div class="col mt-1">
+
+          {% if project is not None and project.project_status != 2 %}
+            {% if user.staff_type == "M" or user.staff_type == "Em" %}
+              <button id="expensesCreateBtn" class="rounded-5" style="width: 32px; height: 32px;" onclick="toggleForm('expenses')">+</button>
+            {% endif %}
+          {% endif %}
+        </div>
+      </div>
+        <div class="mb-3" style="height: 1px; width: 93%; background-color: #EAEFF5"></div>
+        <!-- line break --> 
+          {% for expense in expenses %}
+            <table class="table table-success rounded-3 overflow-hidden" style="width:93%;">
+              <tr>
+                <th>
+                  <span id="desc-{{ expense.expense_id }}">{{ expense.expense_desc}}</span>
+                  <input type="text" name="desc" id="desc-form-{{ expense.expense_id}}" form="expense-form-{{ expense.expense_id }}" class="form-control" value="{{ expense.expense_desc }}" style="display: none;" required>
+                  <br>
+                  {% if user.staff_type != "X" and project.project_status != 2%}
+                    <!-- Edit Form -->
+                    <form action="{% url "update_expense" expense_id=expense.expense_id %}" method="POST" id="expense-form-{{ expense.expense_id }}" class="mb-0 mt-2">{% csrf_token %}
+                      <input type="submit" id="save-expense-{{ expense.expense_id }}" value="Save" class="btn btn-outline-success btn-sm" style="display: none; width: 60px;">
+                    </form>
+                    <button type="button" class="btn btn-outline-dark btn-sm edit-btn" data-type="expense" data-id="{{ expense.expense_id }}" style="width: 60px;">Edit</button>
+
+                    <!-- Delete Form -->
+                    <form action="{% url "delete_expense" %}" method="POST">{% csrf_token %}
+                      <input type="hidden" name="expense_id" value="{{ expense.expense_id }}">
+                      <input type="submit" id="delete-expense-{{ expense.expense_id }}" value="Delete" class="btn btn-outline-danger btn-sm" style="display: none; width: 60px;">
+                    </form>
+                  {% endif %}
+                </th>
+                <td class="table table-light p-0" style="width:80%">
+                  <table style="text-align: left" class="table table-light mb-0">
+                    <tr>
+                      <td><i>Expense by:</i> <b>{{ expense.member.user.name }}</b></td>
+                    </tr>
+                    <tr>
+                      <td>
+                        {% load humanize %}
+                        <i>Amount:</i> <b id="amount-{{ expense.expense_id}}">{{ expense.expense_amt|floatformat:2|intcomma }} PHP</b>
+                        <input type="number" name="amount" id="amount-form-{{ expense.expense_id}}" form="expense-form-{{ expense.expense_id }}" class="form-control w-25" step="0.01" value="{{ expense.expense_amt }}" style="display: none;" required>
+                      </td>
+                    </tr>
+                    <tr class="removeBottomBorder">
+                      <td class="removeBottomBorder">
+                        <i>Date:</i> <b id="date-{{ expense.expense_id }}">{{ expense.expense_date }}</b>
+                        <input type="date" name="date" id="date-form-{{ expense.expense_id }}" form="expense-form-{{ expense.expense_id }}" class="form-control w-25" value="{{ expense.expense_date|date:'Y-m-d' }}" style="display: none;" required>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          {% endfor %}
+    </div>
+
+
+{% endblock %}

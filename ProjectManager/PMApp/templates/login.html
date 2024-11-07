@@ -1,0 +1,47 @@
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block navbar %}
+{% endblock %}
+
+{% block project_selector %}
+{% endblock %}
+
+{% block content %}
+<div class="row mt-5">
+  <div class="d-flex justify-content-center">
+    <div class="bg-black border border-secondary rounded shadow-sm overflow-hidden w-25">
+      <form method="POST" action="{% url "login" %}" class="mb-0">{% csrf_token %}
+        <div class="row p-4">
+          <div class="col-12 mb-2 ">
+            <label for="username" class="form-label">Username</label>
+            <input type="text" class="form-control" id="username" name="username" required>
+          </div>
+          <div class="col-12 mb-2">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" class="form-control" id="password" name="password" required>
+          </div>
+          <div class="col-6 mt-4">
+            <div class="d-grid">
+              <button type="submit" class="btn btn-primary btn-lg">Login</button>
+            </div>
+          </div>
+          <div class="col-6 mt-4">
+            <div class="d-grid">
+              <a href="{% url "register" %}" class="btn btn-secondary btn-lg" role="button">Register</a>
+            </div>
+          </div>
+          {% if error %}
+          <div class="col-12 mt-4">
+              <div class="alert alert-danger mb-0" role="alert">
+                Incorrect username or password!
+              </div>
+          </div>
+          {% endif %}
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

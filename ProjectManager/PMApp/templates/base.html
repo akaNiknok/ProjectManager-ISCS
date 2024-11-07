@@ -1,0 +1,66 @@
+{% load static %}
+<html>
+<head>
+    <title>Project Manager</title>
+
+    <link rel="stylesheet" href="{% static 'custom.css' %}">
+    <link rel="stylesheet" href="{% static '/bootstrap/css/bootstrap.min.css' %}">
+
+  <style>
+    h1 {
+      font-size: 36px;
+    }
+
+    h2 {
+      font-size: 32px;
+    }
+
+    h3 {
+      font-size: 24px;
+    }
+  </style>
+
+    <script src="{% static 'scripts.js'%}"></script>
+    <script src="{% static '/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+</head>
+
+<body style="background-color: 272727;">
+  <div style="background-color: 343A40;">
+    <nav class="navbar navbar-expand-lg" style="height: 60px">
+      <ul class="navbar-nav mt-3">
+
+        <li class="navbar-item me-2">
+            <img style="width: 142px; height: auto; position: relative; bottom:5px;" src="{%static 'images/Atman Logo.png'%}">
+            </img>
+        </li>
+
+        <li class="navbar-item me-2" style="color: ADB5BD;">
+          {{ user.name }} ({{ user.staff_type }})
+        </li>
+        
+        {% block navbar %}
+        {% endblock %}
+      </ul>
+        {% block project_selector %}
+          <!-- Project selector -->
+          <select class="form-select form-select-sm me-2 rounded-3 overflow-hidden" style="position: absolute; left: 60%; width: 35%;" name="project_selector" id="project_selector">
+          {% for project in projects %}
+              <option value="{{ project.project_id }}" {% if project.project_id == request.session.current_project_id %}selected{% endif %}>{{ project.project_name }}{% if project.project_status == 1 or project.project_status == 2 %} ({{ project.get_project_status_display }}){% endif %}</option>
+          {% endfor %}
+          </select>
+          {% if user.staff_type == "M" %}
+          <a href="{% url 'create_project' %}" style="text-decoration: none; margin-bottom: 30px;">
+            <button class="rounded-5" style="width: 32px; height: 32px; position: absolute; left: 96%; text-align: center;">
+              +
+            </button>
+          </a>
+          {% endif %}
+        {% endblock %}
+    </nav>
+  </div>
+    <div class="body">
+        {% block content %}
+        {% endblock %}
+    </div>
+</body>
+</html>

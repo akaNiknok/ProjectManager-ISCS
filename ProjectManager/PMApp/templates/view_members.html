@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block navbar %}
+      <li class="navbar-item"><a class="me-2" style="color: ADB5BD; text-decoration: none;" href="{% url 'dashboard' %}">Dashboard</a></li>
+      <li class="navbar-item"><a class="me-2" style="color: F8F9FA; text-decoration: none;" href="{% url 'view_members' %}">Members</a></li>
+      <li class="navbar-item"><a class="me-2" style="color: ADB5BD; text-decoration: none;" href="{% url 'view_project' %}">Overview</a></li>
+      <li><a class="mr-2" style="color: ADB5BD; text-decoration: none;" href="{% url "logout" %}">Logout</a></li>
+{% endblock %}
+
+{% block content %}
+
+    <!-- TODO DELETE MEMBERS -->
+    <div class ="row">
+      <div class="mt-4" style="position: relative; left: 76%">
+        {% if user.staff_type != "Em" and project.project_status != 2 %}
+          <a href="{% url "add_member"%}">
+              <button class="btn btn-outline-success" type="button" style="width: 150px;">Add Members</button>
+          </a>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- TODO: View members -->
+    <table class="table table-striped rounded-3 overflow-hidden" style="width: 50%; margin:auto; margin-top: 3%">
+      <thead class="table table-secondary table-striped">
+        <tr>
+          <th scope="col" style="width: 50%">Name</th>
+          <th scope="col" style="width: 50%">Role</th>
+          {% if user.staff_type != "Em" and project.project_status != 2 %}
+          <th scope="col" style="width: 10%"></th>
+          {% endif %}
+        </tr>
+      </thead>
+      <tbody>
+    {% for member in members %}
+        <tr>
+          <td scope="col"> {{ member.user.name }} </td>
+          <td scope="col"> {{ member.user.get_staff_type_display }}</td>
+
+          {% if user.staff_type != "Em" and project.project_status != 2  %}
+          <td scope="col"> 
+            <a href="{% url "remove_member" member_id=member.member_id %}" method="POST">
+              <button class="btn btn-outline-danger" type="button" style="width: 100px">Remove</button>
+            </a>
+          </td>
+          {% endif %}
+
+        </tr>
+    {% endfor %}
+      </tbody>
+    </table>
+
+ 
+{% endblock %}
