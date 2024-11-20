@@ -2,8 +2,10 @@
 FROM python:3.13
 
 # Set environment variables
-ENV PYTHONDONTWRITEBYTECODE=1  # Prevents Python from writing .pyc files
-ENV PYTHONUNBUFFERED=1         # Ensures output is shown in the Docker logs
+# Prevents Python from writing .pyc files, and
+# Ensures output is shown in the Docker logs
+ENV PYTHONDONTWRITEBYTECODE=1  
+ENV PYTHONUNBUFFERED 1         
 
 # Set the working directory inside the container
 WORKDIR /app
