@@ -86,7 +86,7 @@ spec:
     app: my-app
   ports:
     - protocol: TCP
-      port: 8000
+      port: 80
       targetPort: 8000
 ```
 To deploy the application using the service.yaml file:
@@ -114,7 +114,7 @@ spec:
           service:
             name: my-app-service
             port:
-              number: 8000
+              number: 80
 ```
 To deploy the application using the ingress.yaml file:
 
@@ -157,8 +157,11 @@ Once all the YAML files have been applied, to recap:
 
 ```bash
 kubectl apply -f deployment.yaml
+
 kubectl apply -f service.yaml
+
 kubectl apply -f ingress.yaml
+
 kubectl apply -f autoscale.yaml
 ```
 
@@ -166,11 +169,14 @@ Verify the deployment:
 
 ```bash
 kubectl get pods
+
 kubectl get services
+
 kubectl get ingress
 kubectl get hpa
 ```
 
+```
 Check the service to access the external IP:
 ```bash
 kubectl get svc
