@@ -6,7 +6,14 @@
 This repository contains Kubernetes manifest files for deploying the `my-app` application.
 
 ## Directory Structure
-kubernetes-manifests/ ├── deployment.yaml ├── service.yaml ├── ingress.yaml ├── autoscale.yaml ├── pvc.yaml
+kubernetes-manifests/ 
+├── deployment.yaml 
+
+├── service.yaml 
+
+├── ingress.yaml 
+
+├── autoscale.yaml 
 
 
 ## Creating and Deploying the `deployment.yaml` File
