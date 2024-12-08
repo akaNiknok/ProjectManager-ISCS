@@ -1,12 +1,16 @@
-# Create a kubernetes-manifests folder
-kubernetes-manifests/
-├── deployment.yaml
-├── service.yaml
-├── ingress.yaml
-├── autoscale.yaml
-├── pvc.yaml
+# Kubernetes Manifests for Deployment
 
-# Creating and Deploying the deployment.yaml file
+This repository contains Kubernetes manifest files for deploying the `my-app` application.
+
+## Directory Structure
+kubernetes-manifests/ ├── deployment.yaml ├── service.yaml ├── ingress.yaml ├── autoscale.yaml ├── pvc.yaml
+
+
+## Creating and Deploying the `deployment.yaml` File
+
+The `deployment.yaml` file defines the Kubernetes deployment for the `my-app` application.
+
+```yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -31,7 +35,3 @@ spec:
         env:
         - name: ENV_VAR_NAME
           value: "value"  # Add any required environment variables
-
-kubectl apply -f deployment.yaml
-kubectl get pods
-
