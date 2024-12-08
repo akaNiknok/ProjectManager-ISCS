@@ -19,6 +19,27 @@ To push the image to Docker Hub run:
 ```bash
 docker push <username>/projectmanager:<version>
 ```
+# Creating a Kubernetes Cluster
+
+Follow these steps to create a Kubernetes cluster in the Google Cloud Console:
+
+1. Navigate to Kubernetes Engine > Clusters in the Google Cloud Console.
+2. Click Create and select SWITCH TO STANDARD CLUSTER.
+3. Enter my-cluster as the cluster name.
+4. For Location type, select Regional.
+5. Choose us-central1-f as the region.
+6. In the left pane, click Node Pools and select default-pool.
+7. Set the Number of nodes to 3.
+8. In the left pane, click Networking under Cluster.
+9. Ensure Enable authorized networks is not selected.
+10. Check the box for Override control plane’s default private endpoint subnet.
+11. Set the Private endpoint subnet to default.
+12. Click Create to finalize the cluster setup.
+
+Reviewing Cluster Details
+
+To review the details of your cluster, use the following command in the Cloud Shell:
+gcloud container clusters describe my-cluster --region us-central1-f
 
 # Kubernetes Manifests for Deployment
 
