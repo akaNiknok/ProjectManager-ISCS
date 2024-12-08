@@ -67,7 +67,7 @@ spec:
     app: my-app
   ports:
     - protocol: TCP
-      port: 8000
+      port: 80
       targetPort: 8000
 ```
 To deploy the application using the service.yaml file:
@@ -95,7 +95,7 @@ spec:
           service:
             name: my-app-service
             port:
-              number: 8000
+              number: 80
 ```
 To deploy the application using the ingress.yaml file:
 
