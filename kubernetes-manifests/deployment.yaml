@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: my-app
-        image: nolene6988/projectmanage:v1.3  # Replace with your DockerHub image and tag
+        image: nolene6988/projectmanager:v1.3  # Replace with your DockerHub image and tag
         ports:
         - containerPort: 80
         env:
