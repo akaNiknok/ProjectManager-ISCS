@@ -35,3 +35,11 @@ spec:
         env:
         - name: ENV_VAR_NAME
           value: "value"  # Add any required environment variables
+
+
+To deploy the application using the deployment.yaml file:
+
+bash
+Copy code
+kubectl apply -f deployment.yaml
+kubectl get pods
