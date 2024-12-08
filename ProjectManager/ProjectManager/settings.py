@@ -11,6 +11,15 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+import io
+import os
+from urllib.parse import urlparse
+
+import environ
+
+# Load the settings from the environment variable
+env = environ.Env()
+env.read_env(io.StringIO(os.environ.get("APPLICATION_SETTINGS", None)))
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,8 +34,14 @@ SECRET_KEY = 'django-insecure-4(x4w@79asy2_l7wvz9=id)3u_ktcq9rwagzl!0zv!mklrh8vk
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['*']
-
+# If defined, add service URLs to Django security settings
+CLOUDRUN_SERVICE_URLS = env("CLOUDRUN_SERVICE_URLS", default=None)
+if CLOUDRUN_SERVICE_URLS:
+    CSRF_TRUSTED_ORIGINS = env("CLOUDRUN_SERVICE_URLS").split(",")
+    # Remove the scheme from URLs for ALLOWED_HOSTS
+    ALLOWED_HOSTS = [urlparse(url).netloc for url in CSRF_TRUSTED_ORIGINS]
+else:
+    ALLOWED_HOSTS = ["*"]
 
 # Application definition
 
