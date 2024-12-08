@@ -18,7 +18,7 @@ spec:
       - name: my-app
         image: nolene6988/projectmanager:v1.3  # Replace with your DockerHub image and tag
         ports:
-        - containerPort: 80
+        - containerPort: 8000
         env:
         - name: ENV_VAR_NAME
           value: "value"  # Set this based on your app's environment variables
