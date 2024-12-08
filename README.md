@@ -51,13 +51,13 @@ kind: Service
 metadata:
   name: my-app-service
 spec:
+  type: LoadBalancer
   selector:
     app: my-app
   ports:
     - protocol: TCP
       port: 8000
       targetPort: 8000
-  type: ClusterIP
 ```
 To deploy the application using the service.yaml file:
 
@@ -116,3 +116,26 @@ spec:
 To deploy the application using the autoscale.yaml file:
 
 kubectl apply -f autoscale.yaml
+
+## Accessing the application
+
+Once all the YAML files have been applied, to recap:
+
+kubectl apply -f deployment.yaml
+kubectl apply -f service.yaml
+kubectl apply -f ingress.yaml
+kubectl apply -f autoscale.yaml
+
+Verify the deployment:
+
+kubectl get pods
+kubectl get services
+kubectl get ingress
+kubectl get hpa
+
+Check the service to access the external IP:
+kubectl get svc
+
+Type the external IP into your browser
+
+
