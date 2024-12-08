@@ -7,6 +7,7 @@ This repository contains Kubernetes manifest files for deploying the `my-app` ap
 
 ## Directory Structure
 kubernetes-manifests/ 
+
 ├── deployment.yaml 
 
 ├── service.yaml 
