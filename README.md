@@ -1,10 +1,39 @@
+# Building the docker image and pushing to Docker Hub
+
+To build the docker image run:
+
+```bash
+docker build -t <username>/projectmanager:<version> .
+```
+
+To test if the docker image is working:
+
+```bash
+docker run -p 4000:8000 <username>/projectmanager:<version>
+```
+
+Open a web browser and go to `localhost:4000` to verify that the app is working.
+
+To push the image to Docker Hub run:
+
+```bash
+docker push <username>/projectmanager:<version>
+```
+
 # Kubernetes Manifests for Deployment
 
 This repository contains Kubernetes manifest files for deploying the `my-app` application.
 
 ## Directory Structure
-kubernetes-manifests/ ├── deployment.yaml ├── service.yaml ├── ingress.yaml ├── autoscale.yaml ├── pvc.yaml
 
+```
+kubernetes-manifests/
+├── deployment.yaml
+├── service.yaml
+├── ingress.yaml
+├── autoscale.yaml
+├── pvc.yaml
+```
 
 ## Creating and Deploying the `deployment.yaml` File
 
@@ -39,9 +68,10 @@ spec:
 ```
 To deploy the application using the deployment.yaml file:
 
-
+```bash
 kubectl apply -f deployment.yaml
 kubectl get pods
+```
 
 ## Creating and Deploying the `service.yaml` File
 
@@ -88,7 +118,9 @@ spec:
 ```
 To deploy the application using the ingress.yaml file:
 
+```bash
 kubectl apply -f ingress.yaml
+```
 
 ## Creating and Deploying the `autoscale.yaml` File
 
@@ -115,27 +147,33 @@ spec:
 
 To deploy the application using the autoscale.yaml file:
 
+```bash
 kubectl apply -f autoscale.yaml
+```
 
 ## Accessing the application
 
 Once all the YAML files have been applied, to recap:
 
+```bash
 kubectl apply -f deployment.yaml
 kubectl apply -f service.yaml
 kubectl apply -f ingress.yaml
 kubectl apply -f autoscale.yaml
+```
 
 Verify the deployment:
 
+```bash
 kubectl get pods
 kubectl get services
 kubectl get ingress
 kubectl get hpa
+```
 
 Check the service to access the external IP:
+```bash
 kubectl get svc
+```
 
 Type the external IP into your browser
-
-
