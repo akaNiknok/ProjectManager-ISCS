@@ -121,21 +121,28 @@ kubectl apply -f autoscale.yaml
 
 Once all the YAML files have been applied, to recap:
 
+```
 kubectl apply -f deployment.yaml
+
 kubectl apply -f service.yaml
+
 kubectl apply -f ingress.yaml
+
 kubectl apply -f autoscale.yaml
-
+```
 Verify the deployment:
-
+```
 kubectl get pods
+
 kubectl get services
+
 kubectl get ingress
-kubectl get hpa
 
+```
 Check the service to access the external IP:
+```
 kubectl get svc
-
+```
 Type the external IP into your browser
 
 
